@@ -1,0 +1,33 @@
+<h1 class="page-header">Edit Joke</h1>
+
+<!-- Custom Success/Erro Message -->
+<div class="row show-hide-message" *ngIf="message">
+  <div [ngClass]="messageClass">
+    <p>{{ message }}</p>
+  </div>
+</div>
+
+<!-- Edit Joke Form -->
+<form (submit)="updateJokeSubmit()" *ngIf="!loading">
+  <!-- Title Field -->
+  <div class="form-group">
+    <p for="title">Title</p>
+    <!-- Title Input -->
+    <input [disabled]="processing" type="text" name="title" placeholder="*Joke Title" class="form-control" [(ngModel)]="joke.title" />
+  </div>
+
+  <!-- Body Field -->
+  <div class="form-group">
+    <p for="body">Body</p>
+    <!-- Body Input -->
+    <textarea [disabled]="processing" name="body" rows="8" cols="80" [(ngModel)]="joke.body" class="form-control" placeholder="*Joke Body"></textarea>
+  </div>
+
+  <!-- Delete Button -->
+  <a [routerLink]="['/delete-joke/', joke._id]"><button  [disabled]="processing"  type="button" name="button" class="btn btn-danger">Delete</button></a>&nbsp;&nbsp;
+  <!-- Go Back Button -->
+  <button [disabled]="processing" type="button" name="button" class="btn btn-success" (click)="goBack()">Go Back</button>&nbsp;&nbsp;
+  <!-- Save Changes Button -->
+  <button [disabled]="processing" type="submit" name="save" class="btn btn-info">Save Changes</button>
+
+</form>

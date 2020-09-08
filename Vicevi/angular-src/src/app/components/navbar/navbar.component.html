@@ -1,0 +1,37 @@
+  <nav class="navbar navbar-expand-xl navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="#"> <img src="../../../assets/icon/smajli.png" style="width:50px;height:50px;" alt="">  Vicevii</a>
+
+      <div class="collapse navbar-collapse" id="navbar" layout="row">
+        <ul class="nav navbar-nav navbar-left mr-auto">
+          <li class="nav-item" layout-align="start center" [routerLinkActive]="['active']" [routerLinkActiveOptions] = "{exact:true}">
+            <a class="nav-link" [routerLink]="['/']">Home </a>
+          </li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right ml-auto "  >
+          <div *ngIf="!isLoggedIn(); then NijePrijavljen else Prijavljen"></div>
+          <ng-template #NijePrijavljen>
+            <li class="nav-item" layout-align="end center" [routerLinkActive]="['active']" [routerLinkActiveOptions] = "{exact:true}">
+              <a class="nav-link" [routerLink]="['/login']">login </a>
+            </li>
+            
+            <li class="nav-item" layout-align="end center" [routerLinkActive]="['active']" [routerLinkActiveOptions] = "{exact:true}">
+              <a class="nav-link" [routerLink]="['/register']">Register </a>
+            </li>
+          </ng-template>
+          
+          <ng-template #Prijavljen>
+            <li class="nav-item" layout-align="end center" [routerLinkActive]="['active']" [routerLinkActiveOptions] = "{exact:true}">
+              <a class="nav-link" [routerLink]="['/jokes']">Jokes </a>
+            </li>
+            <li class="nav-item" layout-align="end center" [routerLinkActive]="['active']" [routerLinkActiveOptions] = "{exact:true}">
+              <a class="nav-link" [routerLink]="['/profile']">Profile </a>
+            </li>
+            
+            <li class="nav-item" layout-align="end center">
+              <a class="nav-link"  (click)="onLogoutClick()" href='#'>Logout </a>
+            </li>
+          </ng-template>
+        </ul>
+      </div>
+    </nav>

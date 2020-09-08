@@ -1,0 +1,59 @@
+<h1 class="page-header">Delete Joke</h1>
+
+<!-- Custom Success/Error Message -->
+<div class="row show-hide-message" *ngIf="message">
+  <div [ngClass]="messageClass">
+    {{ message }}
+  </div>
+</div>
+
+<!-- Modal Confirmation Window -->
+<div class="col-md-6" *ngIf="foundJoke">
+  <!-- Model Outer Layer -->
+  <div class="modal-content">
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <!-- Close Button -->
+      <button type="button" name="button" class="close" data-dismiss="modal">&times;</button>
+      <!-- Modal Title -->
+      <h4 class="modal-title">Confirm</h4>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <p>Are you sure you would like to delete this joke?</p>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer">
+      <!-- Yes Button -->
+      <button [disabled]="processing" type="button" name="button" class="btn btn-success" (click)="deleteJoke()">Yes</button>&nbsp;&nbsp;
+      <!-- No Button -->
+      <a routerLink="/jokes"><button [disabled]="processing" type="button" name="button" class="btn btn-danger">No</button></a>
+    </div>
+  </div>
+
+  <br />
+
+  <!-- Panel -->
+  <div class="panel panel-primary">
+    <!-- Panel Heading -->
+    <div class="panel-heading">
+      <!-- Panel Title -->
+      <h1 class="panel-title">{{ joke.title }}</h1>
+    </div>
+
+    <!-- Panel Body -->
+    <div class="panel-body">
+      <p>{{ joke.body }}</p>
+    </div>
+
+    <!-- Panel Footer -->
+    <div class="panel-footer">
+      <p><strong>Posted by: </strong> {{ joke.createdBy }}</p>
+      <br />
+      <p><strong>Date: </strong> {{ joke.createdAt | date:'MMM dd, yyyy' }}</p>
+    </div>
+  </div>
+
+</div>

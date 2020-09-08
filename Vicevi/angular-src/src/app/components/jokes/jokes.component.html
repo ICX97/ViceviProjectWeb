@@ -1,0 +1,189 @@
+<div class="float-right">
+    <app-best-joke></app-best-joke>
+  </div>
+<div class="float-left container">
+  <!-- Custom Message -->
+  <div class="row show-hide-message" *ngIf="message && newPost">
+    <div [ngClass]="messageClass">
+      {{ message }}
+    </div>
+  </div>
+
+  <!-- New Post Button -->
+  <div class="containerpost">
+    <button type="button" name="button" class="btn btn-primary " *ngIf="!newPost" (click)="newJokeForm()"><b>New Post</b>
+    </button>
+
+    <!-- Reload Button -->
+    <button [disabled]="loadingBlogs" type="button" name="button" class="btn btn-default" *ngIf="!newPost" (click)="reloadJokes()"><span
+        class="glyphicon glyphicon-repeat"></span>&nbsp;&nbsp;<b>Reload</b>
+    </button>
+  </div>
+  <!-- New Blog Form -->
+  <form [formGroup]="form" name="JokeForm" (submit)="onJokeSubmit()" *ngIf="newPost">
+    <!-- Title Input -->
+    <div class="form-group lead">
+      <div class="col-md-4">
+        <h1 for="title">Title</h1>
+        <div [ngClass]="{'has-success': form.controls.title.valid, 'has-error': form.controls.title.dirty && form.controls.title.errors}">
+          <input type="text" name="title" class="form-control" placeholder="*Joke Title" autocomplete="off" formControlName="title"
+          />
+          <ul class="help-block">
+            <li *ngIf="form.controls.title.dirty && form.controls.title.errors?.required">This field is required.</li>
+            <li *ngIf="(form.controls.title.dirty && form.controls.title.errors?.minlength) || (form.controls.title.dirty && form.controls.title.errors?.maxlength)">Max
+              length: 50, Min length: 5</li>
+            <li *ngIf="form.controls.title.dirty && form.controls.title.errors?.alphaNumericValidation">Must be a letter
+              or number</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Body Input -->
+    <div class="form-group containerpost">
+      <p for="body">Body</p>
+      <div [ngClass]="{'has-success': form.controls.body.valid, 'has-error': form.controls.body.dirty && form.controls.body.errors}">
+        <textarea name="body" rows="8" cols="80" placeholder="*Body" class="form-control" formControlName="body"></textarea>
+        <ul class="help-block">
+          <li *ngIf="form.controls.body.dirty && form.controls.body.errors?.required">This field is required.</li>
+          <li *ngIf="(form.controls.body.dirty && form.controls.body.errors?.minlength) || (form.controls.body.dirty && form.controls.body.errors?.maxlength)">Max
+            length: 500, Min length: 5</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Go Back Button -->
+    <button [disabled]="processing" type="button" name="button" (click)="goBack()" class="btn btn-warning">Go Back</button>
+    <!-- Submit Button -->
+    <button [disabled]="processing || !form.valid" type="submit" name="button" class="btn btn-success">Submit</button>
+
+  </form>
+  <!-- New joke Form -->
+
+  <!-- Panel Start -->
+  <div *ngIf="!newPost">
+    <!-- Panel Outer Layer -->
+    <div class="panel panel-primary containerpost" *ngFor="let joke of jokePosts">
+
+      <!-- Panel Title -->
+      <div class="panel-heading containerTitle">
+        <h3 class="panel-title">{{ joke.title }}</h3>
+      </div>
+
+      <!-- Panel Body -->
+      <div class="panel-body containerBody">
+        {{ joke.body }}
+      </div>
+
+      <!-- Panel Footer Start -->
+      <div class="panel-footer containerBody">
+        <strong>Posted by: </strong>{{ joke.createdBy }}
+        <br />
+        <strong>Date: </strong>{{ joke.createdAt | date:'MMM dd, yyyy' }}
+        <br />
+        <div *ngIf="username === joke.createdBy">
+          <strong>Likes: </strong>{{ joke.likes }}
+          <br />
+          <strong>Dislikes: </strong>{{ joke.dislikes }}
+
+        </div>
+
+        <!-- Edit Button -->
+        <a [routerLink]="['/edit-joke/', joke._id]" *ngIf="username === joke.createdBy"><button type="button" name="button"
+            class="btn btn-lg btn-info ">Edit</button></a>
+
+        <!-- Delete Button -->
+        <a [routerLink]="['/delete-joke/', joke._id]" *ngIf="username === joke.createdBy"><button type="button" name="button"
+            class="btn btn-lg btn-danger ">Delete</button></a>
+
+        <!-- Likes Dropdown  -->
+        <div class="dropdown">
+          <!-- Like Button -->
+          <button [disabled]="joke.likedBy.indexOf(username) > -1" type="button" name="button" class="btn btn-sm btn-primary" *ngIf="username !== joke.createdBy"
+            (click)="likeJoke(joke._id)"><span class="glyphicon glyphicon-thumbs-up">&nbsp;</span><img src="../../../assets/icon/like.png"
+              alt="Like" style="width:30px;height:20px;"> {{ joke.likes }}
+          </button>
+          <!-- Dropdown Menu Items -->
+          <div class="dropdown-content">
+            <a [routerLink]="['/users/', liker]" *ngFor="let liker of joke.likedBy">{{ liker }}</a>
+          </div>
+        </div>
+
+        <!-- Dislikes Dropdown  -->
+        <div class="dropdown">
+          <!-- Dislike Button -->
+          <button [disabled]="joke.dislikedBy.indexOf(username) > -1" type="button" name="button" class="btn btn-sm btn-default " *ngIf="username !== joke.createdBy"
+            (click)="dislikeJoke(joke._id)"><span class="glyphicon glyphicon-thumbs-down">&nbsp;<img src="../../../assets/icon/dislike.png"
+                alt="Dislike" style="width:30px;height:20px;"></span>
+            {{ joke.dislikes }}
+          </button>
+          <!-- Dropdown Menu Items -->
+          <div class="dropdown-content">
+            <a [routerLink]="['/users/', disliker]" *ngFor="let disliker of joke.dislikedBy">{{ disliker }}</a>
+          </div>
+        </div>
+
+
+      </div>
+      <!-- Panel Footer End -->
+
+      <ul class="list-group containerBody">
+        <li class="list-group-item containerBody">
+          <!-- Post Comment Button -->
+          <button type="button" name="button" class="btn btn-sm btn-primary" (click)="draftComment(joke._id)" [disabled]="newComment.indexOf(joke._id) > -1">Post
+            Comment
+          </button>
+          <div class="containerpost" *ngIf="newComment.indexOf(joke._id) > -1">
+
+            <!-- Form: Comment Form Start -->
+            <form [formGroup]="commentForm">
+              <!-- Textarea Input -->
+              <textarea name="comment" rows="1" cols="10" class="form-control" formControlName="comment"></textarea>
+              <!-- Validation -->
+              <div [ngClass]="{'has-success': !commentForm.controls.comment.errors && commentForm.controls.comment.dirty, 'has-error': commentForm.controls.comment.dirty && commentForm.controls.comment.errors}">
+                <ul class="help-block">
+                  <li *ngIf="commentForm.controls.comment.errors?.required && commentForm.controls.comment.dirty">This field
+                    is required.</li>
+                  <li *ngIf="(commentForm.controls.comment.errors?.maxlength && commentForm.controls.comment.dirty) ||(commentForm.controls.comment.errors?.minlength && commentForm.controls.comment.dirty)">Comment
+                    must be at least 1 character but no more than 200.</li>
+                </ul>
+              </div>
+              <!-- Post Button -->
+              <button [disabled]="!commentForm.valid || processing" type="submit" name="button" class="btn btn-sm btn-info" (click)="postComment(joke._id)">Post</button>
+              <!-- Cancel Button -->
+              <button [disabled]="processing" type="button" name="button" class="btn btn-sm btn-danger" (click)="cancelComment(joke._id)">Cancel</button>
+            </form>
+
+          </div>
+
+          <!-- Show Comments -->
+          <li *ngIf="enabledComments.indexOf(joke._id) === -1 && joke.comments.length > 0" class="list-group-item containerComment">
+
+            <span (click)="expand(joke._id)">
+              <img src="../../../assets/icon/arrowRight.png" alt="" style="width:20px;height:20px;"> Show comments&nbsp;&nbsp;
+              <div class="glyphicon glyphicon-comment"></div>
+            </span>
+          </li>
+
+          <!-- Hide Comments -->
+          <li *ngIf="enabledComments.indexOf(joke._id) > -1" class="list-group-item containerComment">
+
+            <span (click)="collapse(joke._id)">
+              <img src="../../../assets/icon/arrowRight.png" alt="" style="width:20px;height:20px;"> Hide Comments&nbsp;&nbsp;
+              <div class="glyphicon glyphicon-comment"></div>
+            </span>
+          </li>
+
+          <!-- Comment -->
+          <div *ngIf="enabledComments.indexOf(joke._id) > -1">
+            <li *ngFor="let comment of joke.comments" class="list-group-item containerComments">
+              <strong>{{ comment.commentator }}:</strong> {{ comment.comment }}
+            </li>
+          </div>
+      </ul>
+
+    </div>
+
+  </div>
+
+</div>
